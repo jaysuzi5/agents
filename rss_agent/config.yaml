@@ -1,0 +1,18 @@
+use_local_llm: false
+model_path: "/Users/jaycurtis/Library/Application Support/nomic.ai/GPT4All/"
+local_model: "DeepSeek-R1-Distill-Qwen-14B-Q4_0.gguf"
+rss_prompt_file: "rss_prompt.prompt"
+url_create: "http://home.dev.com/api/v1/articles"
+url_search: "http://home.dev.com/api/v1/articles/search"
+model: "gpt-5-nano"
+max_tokens: 5000
+db_file: "db/rss_agent.db"
+
+rss_feeds:
+  - "https://www.technologyreview.com/feed/"
+  - "https://aws.amazon.com/blogs/aws/feed/"
+  - "https://realpython.com/atom.xml"
+  - "https://devops.com/feed/"
+  - "https://www.elastic.co/blog/feed"
+  - "https://opentelemetry.io/blog/index.xml"
+  - "https://www.splunk.com/en_us/blog/rss.xml"
