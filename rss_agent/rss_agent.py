@@ -32,12 +32,6 @@ def handle_exception(ex, additional_message=None):
         print(additional_message)
     print(f'Exception: {ex}')
 
-def debug_response(response):
-    print('-----------------------------------------------')
-    print('BAD RESPONSE:')
-    print(json.dumps(response, indent=4))
-    print('-----------------------------------------------')
-
 
 # ---------------------------------
 # Helper Methods
@@ -116,15 +110,15 @@ def format_ai_response(config, response, title, link, feed_url):
     summary = None
     try:
         if config['use_local_llm']:
-            llm_response = response['choices'][0]['text'].strip() or ""
+            llm_response = response.choices[0].text.strip() or ""
             llm_response = parse_or_extract_json(llm_response)
             prompt_tokens = 0
             completion_tokens = 0
             model = config['local_model']
         else:
             llm_response = response.choices[0].message.content.strip() or ""
-            prompt_tokens = response["usage"]['prompt_tokens']
-            completion_tokens = response["usage"]['completion_tokens']
+            prompt_tokens = response.usage.prompt_tokens
+            completion_tokens = response.usage.completion_tokens
             model = config['model']
 
         if llm_response == "":
@@ -154,7 +148,6 @@ def format_ai_response(config, response, title, link, feed_url):
         }
     except Exception as ex:
         handle_exception(ex)
-        debug_response(response)
 
     return summary
 
@@ -173,7 +166,7 @@ def parse_or_extract_json(text):
 
     # Try to extract JSON from ```json ... ```
     import re
-    match = re.search(r"```json\s*(\{.*?\})\s*```", text, re.DOTALL)
+    match = re.search(r"```json\s*(\{.*?})\s*```", text, re.DOTALL)
     if match:
         json_str = match.group(1)
         return json_str
@@ -231,7 +224,6 @@ def summarize_text_ai(config, prompt, llm, article_text, title, link, feed_url):
             {"role": "system", "content": prompt},
             {"role": "user", "content": article_text}
         ]
-
         response = openai.ChatCompletion.create(
             model=config['model'],
             messages=messages,
@@ -264,6 +256,7 @@ def fetch_and_store_articles(config, prompt, llm):
         feed = feedparser.parse(response.content)
 
         for entry in feed.entries:
+            link = None
             try:
                 title = entry.title
                 link = entry.link
